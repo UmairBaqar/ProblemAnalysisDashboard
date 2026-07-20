@@ -1,7 +1,4 @@
 # ProblemAnalysisDashboard
-Strucutred Problem Analysis including Root Cause Analysis
-
-
 
 # Root Cause Analysis (RCA) Power BI Toolkit
 
