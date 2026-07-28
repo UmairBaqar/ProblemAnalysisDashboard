@@ -1,96 +1,99 @@
-# ProblemAnalysisDashboard
+# RCA Power BI Portfolio Project — Root Cause Analysis Dashboard
 
-# Root Cause Analysis (RCA) Power BI Toolkit
-
-An interactive Power BI application that operationalizes classic quality-management frameworks — **Fishbone (Ishikawa) diagrams**, **5-Why analysis**, and **Pareto (80/20) prioritization** — as a structured, filterable analytical model rather than static whiteboard diagrams.
+An interactive Power BI dashboard implementing a full **Root Cause Analysis (RCA)** workflow: structured brainstorming → Fishbone (Ishikawa) diagramming → 3-tier Pareto (80/20) prioritization → 5-Why root cause drill-down.
 
 ---
 
-## 🎯 Project Overview
+## 📋 Overview
 
-Most organizations run root cause analysis as a one-time workshop exercise: a fishbone diagram gets drawn on a whiteboard, a few "5 Whys" get scribbled down, and the output lives in a slide deck that's never touched again. This project turns that process into a **living, queryable data model** where:
+Most RCA exercises stop at "brainstorm some causes and pick one." This dashboard asks, at every level: **is this one of the vital few, or the trivial many?**
 
-- Problems are logged and scored systematically (not just gut-feel prioritized)
-- Root causes are traced through structured cause → sub-cause → contributor hierarchies
-- The "5 Whys" for any cause are captured as discrete, level-tagged rows — not free text
-- Pareto analysis automatically identifies the "vital few" categories driving the majority of issues
-- Everything is cross-filterable: click a goal, a category, or a problem, and every other view (causes, whys, priority scores) updates accordingly
+1. **Brainstorm & prioritize** problems against strategic goals (impact/urgency/effort scoring)
+2. **Fishbone analysis** — categorize causes across 6 classic dimensions
+3. **3-tier Pareto** — rank Category → Cause → Sub-Cause by frequency
+4. **5-Why drill-down** — take the Pareto-justified sub-cause to its true root cause
 
-The result is an RCA framework that scales across many problems and goals simultaneously, supports re-analysis over time, and produces defensible, data-backed prioritization instead of anecdotal ranking.
-
-## 🧩 Methodology Implemented
-
-| Framework | How it's modeled |
-|---|---|
-| **Goal Setting** | A `Goals` table anchors every problem to a strategic objective, timeline, and priority level |
-| **Brainstorming & Scoring** | Problems are logged with Impact, Urgency, and Effort ratings (1–5 scale); a weighted **Problem Score** and **Priority Rank** surface the highest-value problems to tackle first |
-| **Fishbone / Ishikawa** | The `FishBone` table captures Category → Cause → Sub-Cause → Contributor for each problem, linked back to its Brainstorming entry and Goal |
-| **5-Why Analysis** | The `Why` table stores each "why" as its own leveled row per sub-cause, enabling a dynamic **Root Cause** measure that always surfaces the deepest ("terminal") why, plus a **Why Narrative** measure that reconstructs the full why-chain as readable text |
-| **Pareto Analysis** | A dedicated set of measures ranks Fishbone categories and individual causes by frequency, calculates cumulative %, and identifies exactly how many categories are needed to reach the 80% threshold — with a ready-made narrative string ("4 of 6 categories") for a Smart Narrative visual |
+---
 
 ## 🗂️ Data Model
 
-**6 tables, 4 relationships:**
+| Table | Purpose |
+|---|---|
+| `Goals` | 4 strategic goals problems map against |
+| `Brainstorming` | Problems per goal, scored for prioritization |
+| `FishBone` | Cause/sub-cause breakdown per problem, across 6 categories |
+| `Why` | 5-Why chains for a selected sub-cause |
 
-```
-Goals ──────────────┐
-  ▲                  │
-  │ (Goal Name)       │ (Goal Name)
-  │                  │
-Brainstorming ───────┘
-  ▲
-  │ (Problem ID / Problem_ID)
-  │
-FishBone
-  ▲
-  │ (Fishbone_ID)
-  │
-Why
+```mermaid
+erDiagram
+    Goals ||--o{ Brainstorming : "Goal Name"
+    Brainstorming ||--o{ FishBone : "Problem_ID"
+    Brainstorming ||--o{ Why : "Problem_ID"
 ```
 
-- **Goals** – strategic objectives with timeline and priority (L/M/H)
-- **Brainstorming** – logged problems with Impact / Urgency / Effort ratings and a calculated priority rank
-- **FishBone** – cause taxonomy (Category, Cause, Sub-Cause, Contributor) per problem
-- **Why** – leveled 5-Why statements per sub-cause, with a `WhyAnchor` flag marking the terminal why
-- **Measures Table** / **claude measures** – 29 DAX measures organized by function (Fishbone summary stats, Pareto analysis, Why/Root-Cause text construction, prioritization scoring)
-
-## 📐 Notable DAX Techniques
-
-- **Dynamic root-cause resolution** — surfaces whichever "why" sits at the deepest level for the currently selected sub-cause, without hardcoding a level number:
-  ```dax
-  Root Cause =
-  VAR SelectedSubCause = SELECTEDVALUE(Fishbone[Sub_Cause])
-  VAR MaxLevel = CALCULATE(MAX('Why'[Why_Level]), ALLSELECTED('Why'))
-  RETURN IF(ISBLANK(SelectedSubCause), BLANK(),
-      CALCULATE(SELECTEDVALUE('Why'[Why_Text]), 'Why'[Why_Level] = MaxLevel))
-  ```
-- **Context-aware Pareto drill-down** — category-level Pareto ranks re-calculate at the individual-cause level using `ALLSELECTED`, so cross-filtering from a category chart into a cause chart preserves proper cumulative-% math
-- **Narrative-ready text measures** — `Why Narrative` and `Vital Few Summary` pre-format DAX output into plain-English strings for direct use in Smart Narrative / natural-language visuals
-- **Weighted prioritization scoring** — combines Impact, Urgency, and Effort ratings into a single sortable Problem Score, feeding a stable Priority Rank column
-
-## 🛠️ Tech Stack
-
-- **Power BI Desktop** — semantic model, DAX, report visuals
-- **Model authored/iterated via Tabular Object Model (TOM) through an MCP-based modeling workflow** — measures, tables, and relationships were built and refined programmatically alongside manual modeling
-
-## 📌 Skills Demonstrated
-
-- Business process modeling (Fishbone, 5-Why, Pareto) translated into a relational data model
-- Intermediate–advanced DAX (context transition, `ALLSELECTED`, dynamic text construction, ranking/cumulative measures)
-- Star-schema-style relationship design with controlled active/inactive relationships
-- Structured problem prioritization frameworks (Impact/Urgency/Effort scoring)
-- Report/measure organization using display folders for end-user usability
-
-## 🚀 How to Use
-
-1. Open the `.pbix` file in Power BI Desktop
-2. Add problems to the **Brainstorming** table with Impact/Urgency/Effort ratings
-3. Break down root causes in the **FishBone** table by category, cause, and sub-cause
-4. Log the **5 Whys** for each sub-cause in the **Why** table, flagging the terminal why with `WhyAnchor`
-5. Use the Pareto visuals to identify which categories to prioritize, and the Priority Score to sequence which problems to tackle first
-
-
+**Note:** `FishBone` and `Why` are siblings — both link to `Brainstorming`, but not to each other. Selecting a cause in a Pareto chart doesn't auto-filter the 5-Why view; the sub-cause must be selected manually on both.
 
 ---
 
-*Built as part of an ongoing personal project applying structured problem-solving methodology to Power BI data modeling.*
+## 📁 Excel Data Source
+
+All tables load from one Excel workbook, with each sheet formatted as a native Excel structured Table. New rows (goals, problems, causes, why-chains) auto-extend the table and pick up the correct data type on refresh — no manual schema work needed for routine entry.
+
+---
+
+## 📊 Pareto Analysis — 3 Tiers
+
+| Tier | Ranks | Key measures |
+|---|---|---|
+| Category | 6 Fishbone categories by cause count | `Pareto Category Rank`, `Pareto Cumulative %`, `Vital Few Story` |
+| Cause | Causes within selected category | `Cause Pareto Rank`, `Cause Pareto Cumulative %`, `Cause Vital Few Story` |
+| Sub-Cause | Sub-causes within selected cause | `Sub Cause Pareto Rank`, `Sub Cause Pareto Cumulative %`, `Sub Cause Vital Few Story` |
+
+Each tier uses tie-broken `RANKX` (frequency, then alphabetical) for reliable cumulative math, plus a dynamic storytelling measure, e.g.:
+
+> *"One category alone drives 27% of every issue. Add the next 4, and you've covered 5 of 6 categories — enough to explain the vast majority of everything going wrong."*
+
+> 💡 **DAX gotcha:** a measure isolating a single rank can't call another measure that uses `ALLSELECTED` on the same column internally — the inner `ALLSELECTED` resets the outer filter, silently giving wrong results. Compute the numerator/denominator directly instead.
+
+---
+
+## 🧮 Measure Library (43 measures)
+
+- **Fishbone/5-Why:** `Fishbone_Head_Problem`, `*_Causes_With_Sub`, `Root Cause`, `Why Narrative`
+- **Prioritization:** `Problem Score`, `Priority Score`
+- **Counts:** `Total Fishbone Items`, `Total Goals`, `Distinct Problems`
+- **Pareto (×3 tiers):** Rank, Cumulative Count, Cumulative %, Total-in-View, X-to-Reach-80%, Vital Few Summary/Story per tier
+
+---
+
+## 🖱️ How It Works
+
+1. Review problems by `Priority Score` on the Brainstorming page
+2. Select a problem → Fishbone diagram populates
+3. Category Pareto chart shows which categories dominate → read `Vital Few Story`
+4. Click top category → Cause Pareto chart narrows down
+5. Click top cause → Sub-Cause Pareto chart identifies the highest-impact sub-cause
+6. Manually select that sub-cause in the 5-Why view to see the full root-cause chain
+
+This keeps every root-cause deep-dive **data-justified**, not arbitrary.
+
+---
+
+## 🖼️ Screenshots
+
+> Add screenshots to an `/images` folder and reference them below.
+
+- `![Brainstorming](images/brainstorming.png)`
+- `![Fishbone](images/fishbone.png)`
+- `![Category Pareto](images/pareto-category.png)`
+- `![Cause Pareto](images/pareto-cause.png)`
+- `![Sub-Cause Pareto](images/pareto-subcause.png)`
+- `![5-Why](images/five-why.png)`
+
+---
+
+## 🛠️ Built With
+
+Power BI Desktop · DAX · Claude + `powerbi-modeling-mcp` (live model editing, measure creation/debugging, DAX validation)
+
+**Stats:** 4 goals · 10 problems · 15 Fishbone entries · 6 categories · 43 measures · 3-tier Pareto drill-down
