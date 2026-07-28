@@ -81,12 +81,18 @@ This keeps every root-cause deep-dive **data-justified**, not arbitrary.
 
 ## 🖼️ Screenshots
 
-- Main Screen RCA Dashboard.png
-- `![Fishbone](images/fishbone.png)`
-- `![Category Pareto](images/pareto-category.png)`
-- `![Cause Pareto](images/pareto-cause.png)`
-- `![Sub-Cause Pareto](images/pareto-subcause.png)`
-- `![5-Why](images/five-why.png)`
+<h3>📷 Project Preview</h3>
+
+<table>
+  <tr>
+    <td><img src="Main Screen RCA Dashboard.png" width="500"></td>
+    <td><img src="Problem Selection.png" width="500"></td>
+  </tr>
+  <tr>
+    <td><img src="Problem Analysis.png" width="500"></td>
+    <td><img src="Root Cause Analysis.png" width="500"></td>
+  </tr>
+</table>
 
 ---
 
