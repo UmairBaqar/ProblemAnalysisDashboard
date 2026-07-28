@@ -81,9 +81,7 @@ This keeps every root-cause deep-dive **data-justified**, not arbitrary.
 
 ## 🖼️ Screenshots
 
-> Add screenshots to an `/images` folder and reference them below.
-
-- `![Brainstorming](images/brainstorming.png)`
+- Main Screen RCA Dashboard.png
 - `![Fishbone](images/fishbone.png)`
 - `![Category Pareto](images/pareto-category.png)`
 - `![Cause Pareto](images/pareto-cause.png)`
