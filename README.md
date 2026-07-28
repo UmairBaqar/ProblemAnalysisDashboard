@@ -94,6 +94,6 @@ This keeps every root-cause deep-dive **data-justified**, not arbitrary.
 
 ## 🛠️ Built With
 
-Power BI Desktop · DAX · Claude + `powerbi-modeling-mcp` (live model editing, measure creation/debugging, DAX validation)
+Power BI Desktop · DAX · Microsoft Excel · Claude + `powerbi-modeling-mcp` (measure creation/debugging, DAX validation)
 
 **Stats:** 4 goals · 10 problems · 15 Fishbone entries · 6 categories · 43 measures · 3-tier Pareto drill-down
