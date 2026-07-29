@@ -1,4 +1,4 @@
-# RCA Power BI Portfolio Project — Root Cause Analysis Dashboard
+# Root Cause Analysis Dashboard- Power BI Portfolio Project
 
 An interactive Power BI dashboard implementing a full **Root Cause Analysis (RCA)** workflow: structured brainstorming → Fishbone (Ishikawa) diagramming → 3-tier Pareto (80/20) prioritization → 5-Why root cause drill-down.
 
