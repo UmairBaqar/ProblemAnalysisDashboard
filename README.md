@@ -51,10 +51,6 @@ All tables load from one Excel workbook, with each sheet formatted as a native E
 
 Each tier uses tie-broken `RANKX` (frequency, then alphabetical) for reliable cumulative math, plus a dynamic storytelling measure, e.g.:
 
-> *"One category alone drives 27% of every issue. Add the next 4, and you've covered 5 of 6 categories — enough to explain the vast majority of everything going wrong."*
-
-> 💡 **DAX gotcha:** a measure isolating a single rank can't call another measure that uses `ALLSELECTED` on the same column internally — the inner `ALLSELECTED` resets the outer filter, silently giving wrong results. Compute the numerator/denominator directly instead.
-
 ---
 
 ## 🧮 Measure Library (43 measures)
